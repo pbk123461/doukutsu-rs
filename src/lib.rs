@@ -148,6 +148,28 @@ impl Game {
                 TimingMode::FrameSynchronized => {
                     scene.tick(state_ref, ctx)?;
                 }
+                TimingMode::AF(tick_rate) => {
+                    let last_tick = self.next_tick;
+
+                    // lol
+                    loop {
+                        if self.start_time.elapsed().as_nanos() >= self.next_tick + (1000000000 / tick_rate) as u128 {
+                            break;
+                        }
+                    }
+
+                    self.next_tick = self.start_time.elapsed().as_nanos() as u128;
+                    self.loops = 1;
+
+                    if self.loops != 0 {
+                        scene.draw_tick(state_ref)?;
+                        self.last_tick = last_tick;
+                    }
+
+                    for _ in 0..self.loops {
+                        scene.tick(state_ref, ctx)?;
+                    }
+                }
             }
         }
         Ok(())
@@ -196,9 +218,9 @@ impl Game {
                 )?;
             }
 
-            if state_ref.settings.fps_counter {
-                self.fps.act(state_ref, ctx, self.last_tick)?;
-            }
+            // if state_ref.settings.fps_counter {
+            self.fps.act(state_ref, ctx, self.last_tick)?;
+            // }
 
             self.ui.draw(state_ref, ctx, scene)?;
         }

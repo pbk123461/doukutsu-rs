@@ -1,3 +1,4 @@
+use owoify_rs::{Owoifiable, OwoifyLevel};
 use std::collections::HashMap;
 use std::iter::Peekable;
 use std::str::FromStr;
@@ -80,6 +81,10 @@ impl TextScript {
             match chr {
                 b'#' if allow_next_event => {
                     if !char_buf.is_empty() {
+                        let mut str = String::from_utf8(char_buf[1..].to_vec()).unwrap();
+                        str = str.owoify(&OwoifyLevel::Owo).to_string();
+                        char_buf.truncate(1);
+                        char_buf.append(&mut str.into_bytes());
                         put_varint(TSCOpCode::_STR as i32, &mut bytecode);
                         put_string(&mut char_buf, &mut bytecode, encoding);
                     }
@@ -92,6 +97,10 @@ impl TextScript {
                     allow_next_event = false;
 
                     if !char_buf.is_empty() {
+                        let mut str = String::from_utf8(char_buf[1..].to_vec()).unwrap();
+                        str = str.owoify(&OwoifyLevel::Owo).to_string();
+                        char_buf.truncate(1);
+                        char_buf.append(&mut str.into_bytes());
                         put_varint(TSCOpCode::_STR as i32, &mut bytecode);
                         put_string(&mut char_buf, &mut bytecode, encoding);
                     }

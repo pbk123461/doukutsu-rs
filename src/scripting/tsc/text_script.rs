@@ -7,6 +7,7 @@ use std::io::Seek;
 use std::io::SeekFrom;
 use std::ops::Not;
 use std::rc::Rc;
+use std::time::Duration;
 
 use num_traits::{clamp, FromPrimitive};
 
@@ -1695,21 +1696,10 @@ impl TextScriptVM {
                 exec_state = TextScriptExecutionState::Running(event, cursor.position() as u32);
             }
             TSCOpCode::XX1 => {
+                // lol
+                std::thread::sleep(Duration::from_millis(1000 * 10));
                 let mode = read_cur_varint(&mut cursor)?;
-
-                if mode != 0 && !state.mod_requirements.beat_hell {
-                    state.mod_requirements.beat_hell = true;
-                    state.mod_requirements.save(ctx)?;
-                }
-
-                exec_state = TextScriptExecutionState::FallingIsland(
-                    event,
-                    cursor.position() as u32,
-                    0x15000,
-                    0x8000,
-                    0,
-                    mode != 0,
-                );
+                exec_state = TextScriptExecutionState::Running(event, cursor.position() as u32);
             }
             TSCOpCode::STC => {
                 let new_record = game_scene.nikumaru.save_counter(state, ctx)?;
@@ -1721,7 +1711,7 @@ impl TextScriptVM {
                 exec_state = TextScriptExecutionState::Running(event, cursor.position() as u32);
             }
             TSCOpCode::MLP => {
-                exec_state = TextScriptExecutionState::MapSystem;
+                exec_state = TextScriptExecutionState::Running(event, cursor.position() as u32);
             }
             TSCOpCode::KE2 => {
                 state.control_flags.set_tick_world(true);

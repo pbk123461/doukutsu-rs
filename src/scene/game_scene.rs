@@ -1761,7 +1761,13 @@ impl Scene for GameScene {
 
                 match state.textscript_vm.state {
                     TextScriptExecutionState::FallingIsland(_, _, _, _, _, _) => (),
-                    TextScriptExecutionState::MapSystem => (),
+                    TextScriptExecutionState::MapSystem => {
+                        if self.tick % 2 == 0 {
+                            if state.control_flags.tick_world() {
+                                self.tick_world(state)?;
+                            }
+                        }
+                    }
                     _ => {
                         if state.control_flags.tick_world() {
                             self.tick_world(state)?;

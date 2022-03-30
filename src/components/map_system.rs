@@ -89,7 +89,6 @@ impl MapSystem {
     ) -> GameResult {
         if state.textscript_vm.state == TextScriptExecutionState::MapSystem {
             if self.state == MapSystemState::Hidden {
-                state.control_flags.set_control_enabled(false);
                 self.state = MapSystemState::FadeInBox(0);
             }
         } else {
@@ -123,8 +122,6 @@ impl MapSystem {
             }
             MapSystemState::FadeOutBox(tick) => {
                 if tick == 0 {
-                    state.control_flags.set_tick_world(true);
-                    state.control_flags.set_control_enabled(true);
                     state.textscript_vm.state = TextScriptExecutionState::Ended;
                     self.state = MapSystemState::Hidden;
                 } else {

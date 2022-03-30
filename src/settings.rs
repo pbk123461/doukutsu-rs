@@ -132,10 +132,10 @@ impl Settings {
         self
     }
 
-    pub fn save(&self, ctx: &Context) -> GameResult {
-        let file = user_create(ctx, "/settings.json")?;
-        serde_json::to_writer_pretty(file, self)?;
-
+    pub fn save(&self, _ctx: &Context) -> GameResult {
+        //let file = user_create(ctx, "/settings.json")?;
+        //serde_json::to_writer_pretty(file, self)?;
+        // lol settings broken
         Ok(())
     }
 

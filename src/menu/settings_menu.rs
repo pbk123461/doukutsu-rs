@@ -113,8 +113,8 @@ impl SettingsMenu {
 
         self.main.push_entry(MenuEntry::Options(
             state.t("menus.options_menu.game_timing.entry"),
-            if state.settings.timing_mode == TimingMode::_50Hz { 0 } else { 1 },
-            vec![state.t("menus.options_menu.game_timing.50tps"), state.t("menus.options_menu.game_timing.60tps")],
+            0,
+            vec!["Reroll".to_string()],
         ));
 
         self.main.push_entry(MenuEntry::Active(DISCORD_LINK.to_owned()));
@@ -239,21 +239,13 @@ impl SettingsMenu {
                     self.language.selected = (state.settings.locale as usize) + 1;
                     self.current = CurrentMenu::LanguageMenu;
                 }
-                MenuSelectionResult::Selected(3, toggle) => {
-                    if let MenuEntry::Options(_, value, _) = toggle {
-                        match state.settings.timing_mode {
-                            TimingMode::_50Hz => {
-                                state.settings.timing_mode = TimingMode::_60Hz;
-                                *value = 1;
-                            }
-                            TimingMode::_60Hz => {
-                                state.settings.timing_mode = TimingMode::_50Hz;
-                                *value = 0;
-                            }
-                            _ => {}
-                        }
-                        let _ = state.settings.save(ctx);
-                    }
+                MenuSelectionResult::Selected(3, _) => {
+                    let now = chrono::Local::now();
+                    let rng = crate::rng::XorShift::new(now.timestamp() as i32);
+                    let tick_rate = crate::rng::RNG::range(&rng, 50..70) as usize;
+                    state.settings.timing_mode = TimingMode::AF(tick_rate);
+
+                    let _ = state.settings.save(ctx);
                 }
                 MenuSelectionResult::Selected(4, _) => {
                     if let Err(e) = webbrowser::open(DISCORD_LINK) {

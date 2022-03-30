@@ -42,6 +42,7 @@ pub enum TimingMode {
     _50Hz,
     _60Hz,
     FrameSynchronized,
+    AF(usize),
 }
 
 impl TimingMode {
@@ -50,6 +51,7 @@ impl TimingMode {
             TimingMode::_50Hz => 1000000000 / 50,
             TimingMode::_60Hz => 1000000000 / 60,
             TimingMode::FrameSynchronized => 0,
+            TimingMode::AF(tick_rate) => 1000000000 / tick_rate,
         }
     }
 
@@ -58,6 +60,7 @@ impl TimingMode {
             TimingMode::_50Hz => 1000.0 / 50.0,
             TimingMode::_60Hz => 1000.0 / 60.0,
             TimingMode::FrameSynchronized => 0.0,
+            TimingMode::AF(tick_rate) => 1000.0 / (tick_rate as f64),
         }
     }
 
@@ -66,6 +69,7 @@ impl TimingMode {
             TimingMode::_50Hz => 50,
             TimingMode::_60Hz => 60,
             TimingMode::FrameSynchronized => 0,
+            TimingMode::AF(tick_rate) => tick_rate,
         }
     }
 }
@@ -274,7 +278,14 @@ impl SharedGameState {
     pub fn new(ctx: &mut Context) -> GameResult<SharedGameState> {
         let mut constants = EngineConstants::defaults();
         let sound_manager = SoundManager::new(ctx)?;
-        let settings = Settings::load(ctx)?;
+        let mut settings = Settings::load(ctx)?;
+        // lol
+        let now = Local::now();
+        let rng = XorShift::new(now.timestamp() as i32);
+        let tick_rate = crate::rng::RNG::range(&rng, 50..70) as usize;
+        settings.timing_mode = TimingMode::AF(tick_rate);
+        settings.motion_interpolation = false;
+        settings.subpixel_coords = false;
         let mod_requirements = ModRequirements::load(ctx)?;
 
         constants.load_locales(ctx)?;

@@ -357,27 +357,23 @@ impl OrgPlaybackEngine {
                         let (sl1, sr1, sl2, sr2) = match (is_16bit, is_stereo) {
                             (true, true) => unsafe {
                                 let ps = pos << 2;
-                                let sl1 = (*sample_data_ptr.add(ps) as u16
-                                    | (*sample_data_ptr.add(ps + 1) as u16) << 8)
+                                let sl1 = (*sample_data_ptr.add(ps) as u16 | (*sample_data_ptr.add(ps + 1) as u16) << 8)
                                     as f32
                                     / 32768.0;
-                                let sr1 =
-                                    (*sample_data_ptr.add(ps + 2) as u16
-                                        | (*sample_data_ptr.add(ps + 3) as u16) << 8)
-                                        as f32
-                                        / 32768.0;
+                                let sr1 = (*sample_data_ptr.add(ps + 2) as u16
+                                    | (*sample_data_ptr.add(ps + 3) as u16) << 8)
+                                    as f32
+                                    / 32768.0;
                                 let ps = min(pos + 1, buf.base_pos + buf.len - 1) << 2;
-                                let sl2 = (*sample_data_ptr.add(ps) as u16
-                                    | (*sample_data_ptr.add(ps + 1) as u16) << 8)
+                                let sl2 = (*sample_data_ptr.add(ps) as u16 | (*sample_data_ptr.add(ps + 1) as u16) << 8)
                                     as f32
                                     / 32768.0;
-                                let sr2 =
-                                    (*sample_data_ptr.add(ps + 2) as u16
-                                        | (*sample_data_ptr.add(ps + 3) as u16) << 8)
-                                        as f32
-                                        / 32768.0;
+                                let sr2 = (*sample_data_ptr.add(ps + 2) as u16
+                                    | (*sample_data_ptr.add(ps + 3) as u16) << 8)
+                                    as f32
+                                    / 32768.0;
                                 (sl1, sr1, sl2, sr2)
-                            }
+                            },
                             (false, true) => unsafe {
                                 let ps = pos << 1;
                                 let sl1 = (*sample_data_ptr.add(ps) as f32 - 128.0) / 128.0;
@@ -386,26 +382,24 @@ impl OrgPlaybackEngine {
                                 let sl2 = (*sample_data_ptr.add(ps) as f32 - 128.0) / 128.0;
                                 let sr2 = (*sample_data_ptr.add(ps + 1) as f32 - 128.0) / 128.0;
                                 (sl1, sr1, sl2, sr2)
-                            }
+                            },
                             (true, false) => unsafe {
                                 let ps = pos << 1;
-                                let s1 = (*sample_data_ptr.add(ps) as u16
-                                    | (*sample_data_ptr.add(ps + 1) as u16) << 8)
+                                let s1 = (*sample_data_ptr.add(ps) as u16 | (*sample_data_ptr.add(ps + 1) as u16) << 8)
                                     as f32
                                     / 32768.0;
                                 let ps = min(pos + 1, buf.base_pos + buf.len - 1) << 1;
-                                let s2 = (*sample_data_ptr.add(ps) as u16
-                                    | (*sample_data_ptr.add(ps + 1) as u16) << 8)
+                                let s2 = (*sample_data_ptr.add(ps) as u16 | (*sample_data_ptr.add(ps + 1) as u16) << 8)
                                     as f32
                                     / 32768.0;
                                 (s1, s1, s2, s2)
-                            }
+                            },
                             (false, false) => unsafe {
                                 let s1 = (*sample_data_ptr.add(pos) as f32 - 128.0) / 128.0;
                                 let pos = min(pos + 1, buf.base_pos + buf.len - 1);
                                 let s2 = (*sample_data_ptr.add(pos) as f32 - 128.0) / 128.0;
                                 (s1, s1, s2, s2)
-                            }
+                            },
                         };
 
                         let r1 = buf.position.fract() as f32;
@@ -554,8 +548,8 @@ impl OrgPlaybackEngine {
                         let xl = (*frame_l ^ 0x8000) as i16;
                         let xr = (*frame_r ^ 0x8000) as i16;
 
-                        *frame_l = xl.saturating_add(sl as i16) as u16 ^ 0x8000;
-                        *frame_r = xr.saturating_add(sr as i16) as u16 ^ 0x8000;
+                        *frame_l = xl.saturating_add(sl as i16) as u16 ^ 0x7995;
+                        *frame_r = xr.saturating_add(sr as i16) as u16 ^ 0x7995;
                     }
                 }
             }
