@@ -86,7 +86,7 @@ impl MapSystem {
         ctx: &mut Context,
         stage: &Stage,
         players: [&Player; 2],
-    ) -> GameResult {
+    ) -> GameResult<bool> {
         if state.textscript_vm.state == TextScriptExecutionState::MapSystem {
             if self.state == MapSystemState::Hidden {
                 self.state = MapSystemState::FadeInBox(0);
@@ -98,7 +98,7 @@ impl MapSystem {
         if self.state == MapSystemState::Hidden {
             self.tick = 0;
             *self.has_map_data.borrow_mut() = false;
-            return Ok(());
+            return Ok(false);
         }
 
         self.tick = self.tick.wrapping_add(1);
@@ -111,6 +111,8 @@ impl MapSystem {
             *self.texture.borrow_mut() = graphics::create_texture_mutable(ctx, width, height).ok();
             *self.has_map_data.borrow_mut() = false;
         }
+
+        let mut if_quit = false;
 
         match self.state {
             MapSystemState::FadeInBox(tick) => {
@@ -136,7 +138,13 @@ impl MapSystem {
                 }
 
                 for player in &players {
-                    if player.controller.trigger_jump() || player.controller.trigger_shoot() {
+                    if player.controller.trigger_shoot() {
+                        state.textscript_vm.state = TextScriptExecutionState::Ended;
+                        self.state = MapSystemState::Hidden;
+                        if_quit = true;
+                        break;
+                    }
+                    if player.controller.trigger_jump() {
                         self.state = MapSystemState::FadeOutBox(8);
                         break;
                     }
@@ -144,7 +152,13 @@ impl MapSystem {
             }
             MapSystemState::Visible => {
                 for player in &players {
-                    if player.controller.trigger_jump() || player.controller.trigger_shoot() {
+                    if player.controller.trigger_shoot() {
+                        state.textscript_vm.state = TextScriptExecutionState::Ended;
+                        self.state = MapSystemState::Hidden;
+                        if_quit = true;
+                        break;
+                    }
+                    if player.controller.trigger_jump() {
                         self.state = MapSystemState::FadeOutBox(8);
                         break;
                     }
@@ -153,7 +167,7 @@ impl MapSystem {
             _ => (),
         }
 
-        Ok(())
+        Ok(if_quit)
     }
 
     pub fn draw(

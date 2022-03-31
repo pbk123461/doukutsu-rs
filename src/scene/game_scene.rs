@@ -1753,7 +1753,9 @@ impl Scene for GameScene {
             }
         }
 
-        self.map_system.tick(state, ctx, &self.stage, [&self.player1, &self.player2])?;
+        if self.map_system.tick(state, ctx, &self.stage, [&self.player1, &self.player2])? {
+            self.pause_menu.gog(state);
+        }
 
         match state.textscript_vm.mode {
             ScriptMode::Map => {

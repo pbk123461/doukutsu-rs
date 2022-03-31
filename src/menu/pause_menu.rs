@@ -13,7 +13,7 @@ use super::settings_menu::SettingsMenu;
 #[derive(PartialEq, Eq, Copy, Clone)]
 #[repr(u8)]
 #[allow(unused)]
-enum CurrentMenu {
+pub enum CurrentMenu {
     PauseMenu,
     OptionsMenu,
     ConfirmMenu,
@@ -93,6 +93,13 @@ impl PauseMenu {
         self.is_paused
     }
 
+    pub fn gog(&mut self, state: &mut SharedGameState) {
+        self.is_paused = true;
+        self.current_menu = CurrentMenu::ConfirmMenu;
+        self.confirm_menu.entries[0] = MenuEntry::Disabled(state.t("menus.pause_menu.title_confirm"));
+        self.pause_menu.selected = 3;
+    }
+
     pub fn tick(&mut self, state: &mut SharedGameState, ctx: &mut Context) -> GameResult {
         self.update_sizes(state);
 
@@ -160,7 +167,10 @@ impl PauseMenu {
                     _ => (),
                 },
                 MenuSelectionResult::Selected(2, _) | MenuSelectionResult::Canceled => {
-                    self.current_menu = CurrentMenu::PauseMenu;
+                    if self.tick >= 3 {
+                        self.tick = 0;
+                        self.current_menu = CurrentMenu::PauseMenu;
+                    }
                 }
                 _ => (),
             },
