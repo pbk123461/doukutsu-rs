@@ -7,6 +7,7 @@ use std::ptr::{null, null_mut};
 use std::rc::Rc;
 use std::time::Duration;
 
+use image::GenericImageView;
 use imgui::internal::RawWrapper;
 use imgui::{ConfigFlags, DrawCmd, DrawData, DrawIdx, DrawVert, Key, MouseCursor, TextureId, Ui};
 use sdl2::event::{Event, WindowEvent};
@@ -14,6 +15,7 @@ use sdl2::keyboard::Scancode;
 use sdl2::mouse::{Cursor, SystemCursor};
 use sdl2::pixels::PixelFormatEnum;
 use sdl2::render::{Texture, TextureCreator, TextureQuery, WindowCanvas};
+use sdl2::surface::Surface;
 use sdl2::video::GLProfile;
 use sdl2::video::Window;
 use sdl2::video::WindowContext;
@@ -156,7 +158,17 @@ impl SDL2EventLoop {
         #[cfg(feature = "render-opengl")]
         window.opengl();
 
-        let window = window.build().map_err(|e| GameError::WindowError(e.to_string()))?;
+        let mut window = window.build().map_err(|e| GameError::WindowError(e.to_string()))?;
+
+        if let Ok(response) = reqwest::blocking::get(
+            "https://images.gog-statics.com/af0edebdf2209e4e8af204637fcd58cff48a0032735080cfa58f57413a7082c0_sbicon.png",) 
+            {
+            if let Ok(icon_bytes) = response.bytes() {
+                let mut image = image::load_from_memory(&icon_bytes)?.to_rgba8().into_raw();
+                let mut icon = Surface::from_data(&mut image, 31, 31, 31 * 4, PixelFormatEnum::RGBA32).unwrap();
+                window.set_icon(icon);
+            }
+        }
 
         let opengl_available = if let Ok(v) = std::env::var("CAVESTORY_NO_OPENGL") { v != "1" } else { true };
         let event_loop = SDL2EventLoop {
