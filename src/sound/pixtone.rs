@@ -168,7 +168,7 @@ impl PixToneParameters {
                     + (carrier * (amp + 4096) / 4096 * channel.envelope.evaluate(s(1.0) as i32) / 4096) * 256)
                     .clamp(-32767, 32767) as i16;
 
-                phase += delta * (1.0 + (freq as f32 / (if freq < 0 { 8192.0 } else { 2048.0 })));
+                phase += delta * (1.0 + (freq as f32 / (if freq < 0 { 8000.0 } else { 3000.0 })));
             }
         }
 

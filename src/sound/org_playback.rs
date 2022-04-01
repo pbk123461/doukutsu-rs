@@ -490,7 +490,7 @@ impl OrgPlaybackEngine {
                             InterpolationMode::Linear => {
                                 let (sl1, sr1) = get_sample(buf, pos);
                                 let (sl2, sr2) = get_sample(buf, min(pos + 1, buf.base_pos + buf.len - 1));
-                                let r1 = buf.position.fract() as f32;
+                                let r1 = 1.0 - buf.position.fract() as f32;
 
                                 let sl = sl1 + (sl2 - sl1) * r1;
                                 let sr = sr1 + (sr2 - sr1) * r1;
@@ -548,8 +548,8 @@ impl OrgPlaybackEngine {
                         let xl = (*frame_l ^ 0x8000) as i16;
                         let xr = (*frame_r ^ 0x8000) as i16;
 
-                        *frame_l = xl.saturating_add(sl as i16) as u16 ^ 0x7995;
-                        *frame_r = xr.saturating_add(sr as i16) as u16 ^ 0x7995;
+                        *frame_l = xl.saturating_add(sl as i16) as u16 ^ 0x8000;
+                        *frame_r = xr.saturating_add(sr as i16) as u16 ^ 0x8000;
                     }
                 }
             }

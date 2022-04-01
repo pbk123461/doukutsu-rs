@@ -189,7 +189,7 @@ impl Player {
     }
 
     fn tick_normal(&mut self, state: &mut SharedGameState, npc_list: &NPCList) -> GameResult {
-        if !state.control_flags.interactions_disabled() && state.control_flags.control_enabled() {
+        // if !state.control_flags.interactions_disabled() && state.control_flags.control_enabled() {
             if self.equip.has_air_tank() {
                 self.air = 1000;
                 self.air_counter = 0;
@@ -214,7 +214,7 @@ impl Player {
                     self.air_counter -= 1;
                 }
             }
-        }
+        // }
 
         if self.cond.hidden() {
             return Ok(());
@@ -228,11 +228,11 @@ impl Player {
 
         self.question = false;
 
-        if !state.control_flags.control_enabled() {
+        // if !state.control_flags.control_enabled() {
             self.booster_switch = BoosterSwitch::None;
-        }
+        // }
 
-        if state.control_flags.control_enabled() {
+        // if state.control_flags.control_enabled() {
             if self.controller.trigger_strafe() {
                 if self.controller.move_up() {
                     self.strafe_up = true;
@@ -240,9 +240,9 @@ impl Player {
             } else if !self.controller.strafe() {
                 self.strafe_up = false;
             }
-        } else {
-            self.strafe_up = false;
-        }
+        // } else {
+        //     self.strafe_up = false;
+        // }
 
         // ground movement
         if self.flags.hit_bottom_wall() || self.flags.hit_right_slope() || self.flags.hit_left_slope() {
@@ -256,7 +256,7 @@ impl Player {
                 self.booster_fuel = 0;
             }
 
-            if state.control_flags.control_enabled() {
+            // if state.control_flags.control_enabled() {
                 let trigger_only_down = self.controller.trigger_down()
                     && !self.controller.trigger_up()
                     && !self.controller.trigger_left()
@@ -295,7 +295,7 @@ impl Player {
                         }
                     }
                 }
-            }
+            // }
 
             if !self.cond.increase_acceleration() {
                 if self.vel_x < 0 {
@@ -736,8 +736,8 @@ impl Player {
                 self.skin.set_state(PlayerAnimationState::Examining);
                 self.anim_num = 0;
                 self.anim_counter = 0;
-            } else if state.control_flags.control_enabled()
-                && (self.controller.move_up() || self.strafe_up)
+            } else if /*state.control_flags.control_enabled()
+                &&*/ (self.controller.move_up() || self.strafe_up)
                 && (self.controller.move_left() || self.controller.move_right())
             {
                 self.cond.set_fallen(true);
@@ -756,8 +756,8 @@ impl Player {
                 if self.anim_num > 9 || self.anim_num < 6 {
                     self.anim_num = 6;
                 }
-            } else if state.control_flags.control_enabled()
-                && (self.controller.move_left() || self.controller.move_right())
+            } else if /*state.control_flags.control_enabled()
+                &&*/ (self.controller.move_left() || self.controller.move_right())
             {
                 self.cond.set_fallen(true);
                 self.skin.set_state(PlayerAnimationState::Walking);

@@ -591,12 +591,12 @@ impl SharedGameState {
 
     pub fn reset(&mut self) {
         self.control_flags.0 = 0;
-        self.game_flags = bitvec::bitvec![0; 8000];
+        // self.game_flags = bitvec::bitvec![0; 8000];
         self.fade_state = FadeState::Hidden;
         self.game_rng = XorShift::new(0);
-        self.teleporter_slots.clear();
-        self.quake_counter = 0;
-        self.carets.clear();
+        // self.teleporter_slots.clear();
+        // self.quake_counter = 0;
+        // self.carets.clear();
         self.textscript_vm.set_mode(ScriptMode::Map);
         self.textscript_vm.suspend = true;
     }
@@ -660,7 +660,7 @@ impl SharedGameState {
     }
 
     pub fn reset_skip_flags(&mut self) {
-        self.skip_flags = bitvec::bitvec![0; 64];
+        // self.skip_flags = bitvec::bitvec![0; 64];
     }
 
     pub fn set_skip_flag(&mut self, id: usize, value: bool) {
