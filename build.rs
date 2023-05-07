@@ -36,3 +36,5 @@ fn main() {
         println!("cargo:rustc-link-lib=dylib=EGL");
     }
 }
+use wasm_bindgen::prelude::*;
+

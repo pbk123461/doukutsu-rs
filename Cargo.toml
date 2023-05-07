@@ -6,7 +6,7 @@ authors = ["Alula", "dawnDus"]
 edition = "2021"
 
 [lib]
-crate-type = ["lib"]
+crate-type = ["cdylib", "rlib", "lib"]
 
 [[bin]]
 name = "doukutsu-rs"
